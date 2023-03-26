@@ -3,7 +3,7 @@
         <div class="timer_card-time" >
             <span>{{ hours }}{{ minutes }}{{ seconds }}</span>
         </div>
-        <div class="timer_card-buttons" ref="border" >
+        <div class="timer_card-buttons" ref="border">
             <svg v-if="startVisible"
                  @click="startTimer"
                  class="timer_card-buttons-start"
@@ -37,7 +37,7 @@ let sec = ref(0);
 let clear = ref();
 let border = ref();
 let interval;
-let startVisible = true;
+let startVisible = ref(true);
 let min = ref(0)
 let hour = ref(0)
 
@@ -65,9 +65,10 @@ function toggleSquareColor(){
         clear.value.style.fill = 'rgb(158, 158, 158)'
     }
 }
+
 function startTimer(){
     interval = setInterval(() =>  {sec.value += 0.2}, 200)
-    startVisible = false
+    startVisible.value = false
     changeBorderColor()
     toggleSquareColor()
 }
@@ -75,7 +76,7 @@ function startTimer(){
 function clearTimer(){
     if(sec.value !== 0){
         clearInterval(interval)
-        startVisible = true
+        startVisible.value = true
         sec.value = 0
         changeBorderColor()
         toggleSquareColor()
@@ -84,10 +85,9 @@ function clearTimer(){
 
 function stopTimer(){
     clearInterval(interval)
-    startVisible = true
     changeBorderColor()
     toggleSquareColor()
-    startVisible = true
+    startVisible.value = true
 }
 
 watch(sec, (value) => {
