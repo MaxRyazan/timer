@@ -1,7 +1,7 @@
 <template>
     <div class="timer_card">
         <div class="timer_card-time" >
-            <span>{{ Math.round(now) }}</span>
+            <span>{{ hours }}{{ minutes }}{{ seconds }}</span>
         </div>
         <div class="timer_card-buttons" ref="border" >
             <svg v-if="startVisible"
@@ -31,15 +31,28 @@
 </template>
 
 <script setup>
-import {onMounted, onUnmounted, ref} from "vue";
-import store from "@/store/store";
+import {computed, onMounted, onUnmounted, ref, watch} from "vue";
 
-let now = ref(0);
+let sec = ref(0);
 let clear = ref();
 let border = ref();
-
 let interval;
 let startVisible = true;
+let min = ref(0)
+let hour = ref(0)
+
+
+const seconds = computed(() => {
+    if(sec.value === 0) return 0
+    return (sec.value > 9.4) ? Math.round(sec.value) : ('0' + Math.round(sec.value))
+})
+const minutes = computed(() => {
+    return min.value > 0 ? min.value+':' : ''
+})
+const hours = computed(() => {
+    return hour.value > 0 ? hour.value+':' : ''
+})
+
 
 function changeBorderColor(){
     border.value.classList.toggle('white_border')
@@ -52,20 +65,18 @@ function toggleSquareColor(){
         clear.value.style.fill = 'rgb(158, 158, 158)'
     }
 }
-
-
 function startTimer(){
-    interval = setInterval(() =>  {now.value += 0.2}, 200)
+    interval = setInterval(() =>  {sec.value += 0.2}, 200)
     startVisible = false
     changeBorderColor()
     toggleSquareColor()
 }
 
 function clearTimer(){
-    if(now.value !== 0){
+    if(sec.value !== 0){
         clearInterval(interval)
         startVisible = true
-        now.value = 0
+        sec.value = 0
         changeBorderColor()
         toggleSquareColor()
     }
@@ -76,7 +87,19 @@ function stopTimer(){
     startVisible = true
     changeBorderColor()
     toggleSquareColor()
+    startVisible = true
 }
+
+watch(sec, (value) => {
+    if(value > 59.4){
+        sec.value = 0;
+        min.value += 1
+        if(min.value > 59){
+            min.value = 0;
+            hour.value += 1
+        }
+    }
+})
 
 onMounted(() => {
     clear.value.style.fill = 'rgb(158, 158, 158)'
